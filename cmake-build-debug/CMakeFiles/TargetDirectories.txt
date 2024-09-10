@@ -1,0 +1,4 @@
+/home/ekon-ihc/Desktop/neorv32/sw/example/NEORV32_PROJECT/cmake-build-debug/CMakeFiles/run_make.dir
+/home/ekon-ihc/Desktop/neorv32/sw/example/NEORV32_PROJECT/cmake-build-debug/CMakeFiles/NEORV32_PROJECT.dir
+/home/ekon-ihc/Desktop/neorv32/sw/example/NEORV32_PROJECT/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ekon-ihc/Desktop/neorv32/sw/example/NEORV32_PROJECT/cmake-build-debug/CMakeFiles/rebuild_cache.dir
