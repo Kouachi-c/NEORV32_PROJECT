@@ -62,7 +62,7 @@ private:
     int32_t _sensorID; /**< sensor ID */
     uint8_t _address; /**< address */
     neorv32_uart_t *_uart = NULL; /**< uart */
-    neorv32_bno055_opmode_t _mode; /**< mode */
+    // neorv32_bno055_opmode_t _mode; /**< mode */
 
     bool write8(neorv32_bno055_reg_t reg, uint8_t value); // Write 8
     uint8_t read8(neorv32_bno055_reg_t reg); // Read 8
