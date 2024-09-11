@@ -20,6 +20,12 @@
 /** BNO055 PAGE ID ADDRESS */
 #define BNO055_PAGE_ID_ADDR 0x07
 
+/** ************************************************************************* */
+/** NEORV32 UART*/
+#define NEORV32_UART0_BASE (NEORV32_UART0)  // UART0 base address
+#define BAUD_RATE 19200  // Baud rate
+/** ************************************************************************* */
+
 /** BNO055 sensors offsets */
 typedef struct {
     int16_t accel_offset_x; /**< x acceleration offset */
@@ -64,9 +70,9 @@ private:
     neorv32_uart_t *_uart = NULL; /**< uart */
     // neorv32_bno055_opmode_t _mode; /**< mode */
 
-    bool write8(neorv32_bno055_reg_t reg, uint8_t value); // Write 8
-    uint8_t read8(neorv32_bno055_reg_t reg); // Read 8
-    bool readLen(neorv32_bno055_reg_t reg, uint8_t *buffer, uint8_t len); // Read length
+    bool transmit(neorv32_bno055_reg_t reg, uint8_t value); // Transmit 8
+    uint8_t receive(neorv32_bno055_reg_t reg); // Receive 8
+    bool receiveLen(neorv32_bno055_reg_t reg, uint8_t *buffer, uint8_t len); // Receive length
 
 
 public:
