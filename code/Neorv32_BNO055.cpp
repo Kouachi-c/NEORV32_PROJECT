@@ -721,7 +721,14 @@ void Neorv32_BNO055::enterNormalMode() {
  *     true if the transmission is successful, false otherwise
  */
 bool Neorv32_BNO055::transmit(neorv32_reg_t reg, uint8_t value) {
-
+    if(neorv32_uart_available(_uart)) {
+        neorv32_uart_putc(_uart, reg);  // Send the register address
+        neorv32_uart_putc(_uart, value);  // Send the value
+        if(!(neorv32_uart_get_status(_uart)&NEORV32_UART_STATUS_TX_ERROR)) {
+            return true;  // Return true
+        }
+    }
+    return false;  // Return false
 }
 
 /**
@@ -732,6 +739,15 @@ bool Neorv32_BNO055::transmit(neorv32_reg_t reg, uint8_t value) {
  */
 uint8_t Neorv32_BNO055::receive(neorv32_reg_t reg) {
 
+    uint8_t value;
+    if(neorv32_uart_available(_uart)) {
+        neorv32_uart_putc(_uart, reg);  // Send the register address
+        neorv32_delay_ms(10);  // Wait for 10 ms
+        if(neorv32_uart_available(_uart)) {
+            value = neorv32_uart_getc(_uart);  // Get the value
+        }
+    }
+    return value;  // Return the value
 }
 
 /**
@@ -744,11 +760,20 @@ uint8_t Neorv32_BNO055::receive(neorv32_reg_t reg) {
  *
  */
 bool Neorv32_BNO055::receiveLength(neorv32_reg_t reg, uint8_t *buffer, uint8_t len) {
-
+    if(neorv32_uart_available(_uart)) {
+        neorv32_uart_putc(_uart, reg);  // Send the register address
+        neorv32_delay_ms(10);  // Wait for 10 ms
+        for(uint8_t i = 0; i < len; i++) {
+            if(neorv32_uart_available(_uart)) {
+                buffer[i] = neorv32_uart_getc(_uart);  // Get the value
+            } else {
+                return false;  // Return false
+            }
+        }
+        return true;  // Return true
+    }
+    return false;  // Return false
 }
-
-
-
 
 
 
