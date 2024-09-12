@@ -9,18 +9,15 @@
  * Constructor
  * @param sensorID ID of the sensor
  * @param irq_mask Interrupt configuration mask (CTRL's irq_* bits).
- * @param uart UART peripheral used for communication  (uart0 by default)
  */
-Neorv32_BNO055::Neorv32_BNO055(int32_t sensorID, uint32_t irq_masK, neorv32_uart_t *uart) {
+Neorv32_BNO055::Neorv32_BNO055(int32_t sensorID) {
     //std::cout<<"BNO055 constructor\n";
 
     _sensorID = sensorID;  // ID of the sensor
-    _irq_mask = irq_masK;  // UART interrupt configuration mask
-    _uart = uart;  // UART peripheral used for communication
 
 
     // Initialize uart (uart0 by default) with interrupt (no interrupt by default) support
-    neorv32_uart_setup(_uart, BAUD_RATE, _irq_mask);
+    neorv32_uart0_setup( BAUD_RATE, 0);
 
 
 
@@ -68,7 +65,7 @@ Neorv32_BNO055::Neorv32_BNO055(int32_t sensorID, uint32_t irq_masK, neorv32_uart
  *       - Default unitSel is UNIT_SEL_AND_CEl_DPS_DEG_MS2
  * @return True if the process was successfully initialized, false otherwise
  */
-bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel_t unitSel = UNIT_SEL_AND_CEl_DPS_DEG_MS2) {
+bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel_t unitSel) {
 
     // Check if the sensor is the right one
     uint8_t id = receive(BNO055_CHIP_ID_ADDR);  // Read the chip ID
@@ -261,7 +258,7 @@ void Neorv32_BNO055::setExtCrystalUse(bool usextal) {
  *       - 0x0A: Sensor configuration error
  *
  */
-void Neorv32_BNO055::getSystemStatus(uin8_t *system_status, uin8_t *self_test_result, uin8_t *system_error) {
+void Neorv32_BNO055::getSystemStatus(uint8_t *system_status, uint8_t *self_test_result, uint8_t *system_error) {
     transmit(BNO055_PAGE_ID_ADDR, 0x00);  // Select the page 0
     if(system_status) {
         *system_status = receive(BNO055_SYS_STAT_ADDR);  // Read the SYS_STAT register
@@ -509,7 +506,7 @@ bool Neorv32_BNO055::getSensorOffsets(uint8_t *calibData) {
         neorv32_bno055_opmode_t lastMode = _mode;  // Get the current mode
         setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
 
-        receiveLength(BNO055_ACC_OFFSET_X_LSB_ADDR, calibData, NUM_BNO055_OFFSET_REGISTERS);  // Read the sensor offsets
+        receiveLen(BNO055_ACCEL_DATA_X_LSB_ADDR, calibData, NUM_BNO055_OFFSET_REGISTERS);  // Read the sensor offsets
         setMode(lastMode);  // Set the sensor to the previous mode
         return true;  // Return true
     }
@@ -720,13 +717,11 @@ void Neorv32_BNO055::enterNormalMode() {
  * @return
  *     true if the transmission is successful, false otherwise
  */
-bool Neorv32_BNO055::transmit(neorv32_reg_t reg, uint8_t value) {
-    if(neorv32_uart_available(_uart)) {
-        neorv32_uart_putc(_uart, reg);  // Send the register address
-        neorv32_uart_putc(_uart, value);  // Send the value
-        if(!(neorv32_uart_get_status(_uart)&NEORV32_UART_STATUS_TX_ERROR)) {
-            return true;  // Return true
-        }
+bool Neorv32_BNO055::transmit(neorv32_bno055_reg_t reg, uint8_t value) {
+    if(neorv32_uart0_available()) {
+        neorv32_uart0_putc(reg);  // Send the register address
+        neorv32_uart0_putc(value);  // Send the value
+        return true;  // Return true
     }
     return false;  // Return false
 }
@@ -737,21 +732,18 @@ bool Neorv32_BNO055::transmit(neorv32_reg_t reg, uint8_t value) {
  * @return
  *     the received value
  */
-uint8_t Neorv32_BNO055::receive(neorv32_reg_t reg) {
+uint8_t Neorv32_BNO055::receive(neorv32_bno055_reg_t reg) {
 
     uint8_t value;
-    if(neorv32_uart_available(_uart)) {
-        neorv32_uart_putc(_uart, reg);  // Send the register address
-        neorv32_delay_ms(10);  // Wait for 10 ms
-        if(neorv32_uart_available(_uart)) {
-            value = neorv32_uart_getc(_uart);  // Get the value
-        }
-    }
+    neorv32_uart0_putc( reg);  // Send the register address
+    neorv32_delay_ms(10);  // Wait for 10 ms
+    value = (uint8_t)neorv32_uart0_getc();  // Get the value
+
     return value;  // Return the value
 }
 
 /**
- * receiveLength function
+ * receiveLen function
  * @param reg
  * @param data
  * @param length
@@ -759,16 +751,13 @@ uint8_t Neorv32_BNO055::receive(neorv32_reg_t reg) {
  *    true if the reception is successful, false otherwise
  *
  */
-bool Neorv32_BNO055::receiveLength(neorv32_reg_t reg, uint8_t *buffer, uint8_t len) {
-    if(neorv32_uart_available(_uart)) {
-        neorv32_uart_putc(_uart, reg);  // Send the register address
+bool Neorv32_BNO055::receiveLen(neorv32_bno055_reg_t reg, uint8_t *buffer, uint8_t len) {
+    if(neorv32_uart0_available()) {
+        neorv32_uart0_putc( reg);  // Send the register address
         neorv32_delay_ms(10);  // Wait for 10 ms
         for(uint8_t i = 0; i < len; i++) {
-            if(neorv32_uart_available(_uart)) {
-                buffer[i] = neorv32_uart_getc(_uart);  // Get the value
-            } else {
-                return false;  // Return false
-            }
+
+            buffer[i] = (uint8_t)neorv32_uart0_getc();  // Get the value
         }
         return true;  // Return true
     }
@@ -783,8 +772,5 @@ bool Neorv32_BNO055::receiveLength(neorv32_reg_t reg, uint8_t *buffer, uint8_t l
  *
 */
 Neorv32_BNO055::~Neorv32_BNO055() {
-    if (_uart) {
-        delete _uart;  // Free allocated memory
-        _uart = nullptr;
-    }
+    neorv32_uart0_printf("Destructor called\n");
 }
