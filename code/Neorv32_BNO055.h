@@ -5,6 +5,7 @@
 #ifndef NEORV32_PROJECT_NEORV32_BNO055_H
 #define NEORV32_PROJECT_NEORV32_BNO055_H
 
+#include <string.h>
 #include "neorv32.h"
 #include "neorv32_uart.h"
 
@@ -20,10 +21,14 @@
 /** BNO055 PAGE ID ADDRESS */
 #define BNO055_PAGE_ID_ADDR 0x07
 
+/** BNO055 NUMBER OF OFFSET REGISTERS */
+#define NUM_BNO055_OFFSET_REGISTERS (22) // Number of offset registers
+
 /** ************************************************************************* */
 /** NEORV32 UART*/
 #define NEORV32_UART0_BASE (NEORV32_UART0)  // UART0 base address
-#define BAUD_RATE 19200  // Baud rate
+#define NEORV32_UART1_BASE (NEORV32_UART1)  // UART1 base address
+#define BAUD_RATE 115200  // Baud rate (the communication of BNO055 with uart requires 115200 baud rate)
 /** ************************************************************************* */
 
 /** BNO055 sensors offsets */
@@ -66,8 +71,10 @@ class Neorv32_BNO055 {
 
 private:
     int32_t _sensorID; /**< sensor ID */
-    uint8_t _address; /**< address */
+    uint32_t _irq_mask; /**< interrupt mask */
     neorv32_uart_t *_uart = NULL; /**< uart */
+    neorv32_bno055_opmode_t _mode; /**< mode */
+
     // neorv32_bno055_opmode_t _mode; /**< mode */
 
     bool transmit(neorv32_bno055_reg_t reg, uint8_t value); // Transmit 8
@@ -312,14 +319,24 @@ public:
 
     /** BNO055 unit selection */
     typedef enum {
-        UNIT_SEL_ACC_MS2 = 0x00,
-        UNIT_SEL_ACC_MG = 0x01,
-        UNIT_SEL_GYR_DPS = 0x00,
-        UNIT_SEL_GYR_RPS = 0x02,
-        UNIT_SEL_EULER_DEG = 0x00,
-        UNIT_SEL_EULER_RAD = 0x04,
-        UNIT_SEL_TEMP_C = 0x00,
-        UNIT_SEL_TEMP_F = 0x10
+        UNIT_SEL_AND_CEl_DPS_RAD_MS2 = 0b10000100,   // Andriod / Celsius / Dps / Rads / m/s^2
+        UNIT_SEL_AND_CEl_RPS_RAD_MS2 = 0b10000110,   // Andriod / Celsius / Rps / Rads / m/s^2
+        UNIT_SEL_AND_CEl_DPS_DEG_MS2 = 0b10000000,   // Andriod / Celsius / Dps / Deg / m/s^2
+        UNIT_SEL_AND_CEl_RPS_DEG_MS2 = 0b10000010,   // Andriod / Celsius / Rps / Deg / m/s^2
+        UNIT_SEL_AND_F_DPS_RAD_MS2 = 0b10010100,     // Andriod / Fahrenheit / Dps / Rads / m/s^2
+        UNIT_SEL_AND_F_RPS_RAD_MS2 = 0b10010110,     // Andriod / Fahrenheit / Rps / Rads / m/s^2
+        UNIT_SEL_AND_F_DPS_DEG_MS2 = 0b10010000,     // Andriod / Fahrenheit / Dps / Deg / m/s^2
+        UNIT_SEL_AND_F_RPS_DEG_MS2 = 0b10010010,     // Andriod / Fahrenheit / Rps / Deg / m/s^2
+
+        UNIT_SEL_WIN_CEl_DPS_RAD_MS2 = 0b00000100,   // Windows / Celsius / Dps / Rads / m/s^2
+        UNIT_SEL_WIN_CEl_RPS_RAD_MS2 = 0b00000110,   // Windows / Celsius / Rps / Rads / m/s^2
+        UNIT_SEL_WIN_CEl_DPS_DEG_MS2 = 0b00000000,   // Windows / Celsius / Dps / Deg / m/s^2
+        UNIT_SEL_WIN_CEl_RPS_DEG_MS2 = 0b00000010,   // Windows / Celsius / Rps / Deg / m/s^2
+        UNIT_SEL_WIN_F_DPS_RAD_MS2 = 0b00010100,     // Windows / Fahrenheit / Dps / Rads / m/s^2
+        UNIT_SEL_WIN_F_RPS_RAD_MS2 = 0b00010110,     // Windows / Fahrenheit / Rps / Rads / m/s^2
+        UNIT_SEL_WIN_F_DPS_DEG_MS2 = 0b00010000,     // Windows / Fahrenheit / Dps / Deg / m/s^2
+        UNIT_SEL_WIN_F_RPS_DEG_MS2 = 0b00010010,     // Windows / Fahrenheit / Rps / Deg / m/s^2
+
     } neorv32_bno055_unit_sel_t;
 
     /** structure to represent revisions **/
@@ -342,41 +359,37 @@ public:
     } neorv32_vector_type_t;
 
     /** BNO055 constructor */
-    Neorv32_BNO055(int32_t sensorID = -1, uint_8 address = BNO055_ADDRESS, neorv32_uart_t *uart = &neorv32_uart0); // Constructor
+    Neorv32_BNO055(int32_t sensorID = -1, uint32_t irq_mask = 0, neorv32_uart_t *uart = NEORV32_UART0_BASE); // Constructor
 
-    bool begin(neorv32_bno055_opmode_t mode = OPERATION_MODE_NDOF); // Begin
+    bool begin(neorv32_bno055_opmode_t mode = OPERATION_MODE_NDOF, neorv32_bno055_unit_sel_t unitSel = UNIT_SEL_AND_CEl_DPS_DEG_MS2) // begin
 
     void setMode(neorv32_bno055_opmode_t mode); // Set mode
-    void getMode(neorv32_bno055_opmode_t *mode); // Get mode
-    void setPowerMode(neorv32_bno055_powermode_t mode); // Set power mode
-    void getPowerMode(neorv32_bno055_powermode_t *mode); // Get power mode
-    void setTempSource(neorv32_bno055_temp_source_t source); // Set temperature source
-    void getTempSource(neorv32_bno055_temp_source_t *source); // Get temperature source
-    void setUnits(neorv32_bno055_unit_sel_t units); // Set units
-    void getUnits(neorv32_bno055_unit_sel_t *units); // Get units
-    void getRevInfo(neorv32_bno055_rev_info_t *info); // Get revision info
+    neorv32_bno055_opmode_t getMode(); // Get mode
+    void setAxisRemap(neorv32_bno055_axis_remap_config_t remapCode ); // Set axis remap
+    void setAxisSign(neorv32_bno055_axis_remap_sign_t remapSign); // Set axis sign
     void setExtCrystalUse(bool usextal); // Set external crystal use
+    void getRevInfo(neorv32_bno055_rev_info_t *info); // Get revision info
     void getSystemStatus(uint8_t *system_status, uint8_t *self_test_result, uint8_t *system_error); // Get system status
     void getCalibration(uint8_t *system, uint8_t *gyro, uint8_t *accel, uint8_t *mag); // Get calibration
-    void getVector(neorv32_vector_type_t vector, int16_t *data); // Get vector
-    void getQuat(int16_t *w, int16_t *x, int16_t *y, int16_t *z); // Get quaternion
-    void getEuler(int16_t *heading, int16_t *roll, int16_t *pitch); // Get euler
-    void getLinearAccel(int16_t *x, int16_t *y, int16_t *z); // Get linear acceleration
-    void getGravity(int16_t *x, int16_t *y, int16_t *z); // Get gravity
     int8_t getTemp(); // Get temperature
-    void getOffsets(neorv32_bno055_offsets_t *offsets); // Get offsets
-    void setOffsets(const neorv32_bno055_offsets_t *offsets); // Set offsets
+    void getVector(neorv32_vector_type_t vector, int16_t *data); // Get vector
+    void getQuat(uint16_t *w, uint16_t *x, uint16_t *y, uint16_t *z); // Get quaternion
     bool getSensorOffsets(uint8_t *calibData); // Get sensor offsets
     bool getSensorOffsets(neorv32_bno055_offsets_t &offsets_type); // Get sensor offsets
     void setSensorOffsets(const uint8_t *calibData); // Set sensor offsets
     void setSensorOffsets(const neorv32_bno055_offsets_t &offsets_type); // Set sensor offsets
     bool isFullyCalibrated(); // Is fully calibrated
-    void setAxisRemap(bool x, bool y, bool z, neorv32_bno055_axis_remap_config_t config = REMAP_CONFIG_P1); // Set axis remap
-    void setAxisSign(bool x, bool y, bool z, neorv32_bno055_axis_remap_sign_t sign = REMAP_SIGN_P1); // Set axis sign
 
     /* Power managments functions */
     void enterSuspendMode();
     void enterNormalMode();
+
+
+
+
+
+
+
 
 
 
