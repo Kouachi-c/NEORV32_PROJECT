@@ -28,7 +28,6 @@
 /** ************************************************************************* */
 /** NEORV32 UART*/
 #define BAUD_RATE 115200  // Baud rate (the communication of BNO055 with uart requires 115200 baud rate)
-#define neorv32_delay_ms(ms) neorv32_cpu_delay_ms(ms) // Delay in ms
 /** ************************************************************************* */
 
 #define uint8_t unsigned char

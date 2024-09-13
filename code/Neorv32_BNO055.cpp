@@ -70,7 +70,7 @@ bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel
     // Check if the sensor is the right one
     uint8_t id = receive(BNO055_CHIP_ID_ADDR);  // Read the chip ID
     if(id != BNO055_ID) {   // Check if the chip ID is correct
-        neorv32_delay_ms(1000);  // Wait for 1 second
+        neorv32_cpu_delay_ms(1000);  // Wait for 1 second
         id = receive(BNO055_CHIP_ID_ADDR);  // Read the chip ID again
         if(id != BNO055_ID) {  // Check one more time if the chip ID is correct
             return false;  // Return false if the chip ID is incorrect
@@ -79,20 +79,20 @@ bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel
 
     // Set the sensor to CONFIG mode
     setMode(mode);
-    neorv32_delay_ms(19);  // Wait for 20 ms (this time delay is for security. any mode to config mode switch requires 19 ms and config mode to any mode switch requires 7 ms.)
+    neorv32_cpu_delay_ms(19);  // Wait for 20 ms (this time delay is for security. any mode to config mode switch requires 19 ms and config mode to any mode switch requires 7 ms.)
 
     // Reset the sensor
     transmit(BNO055_SYS_TRIGGER_ADDR, 0x20);  // Reset the sensor
-    neorv32_delay_ms(650);  // Wait for 650 ms (this time delay is for security. reset requires 650 ms.)
+    neorv32_cpu_delay_ms(650);  // Wait for 650 ms (this time delay is for security. reset requires 650 ms.)
 
     while(receive(BNO055_CHIP_ID_ADDR) != BNO055_ID) {  // Check if the chip ID is correct
-        neorv32_delay_ms(1000);  // Wait for 1 second
+        neorv32_cpu_delay_ms(1000);  // Wait for 1 second
     }
-    neorv32_delay_ms(50);  // Wait for 50 ms
+    neorv32_cpu_delay_ms(50);  // Wait for 50 ms
 
     // Set the sensor to normal power mode
     transmit(BNO055_PWR_MODE_ADDR, POWER_MODE_NORMAL);  // Set the power mode to normal
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
 
     // Select the page 0
     transmit(BNO055_PAGE_ID_ADDR, 0x00);  // Select the page 0 (the output data format register is in page 0)
@@ -105,7 +105,7 @@ bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel
 
     // Set the sensor to the selected mode
     setMode(mode);
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
 
     return true;
 }
@@ -131,7 +131,7 @@ bool Neorv32_BNO055::begin(neorv32_bno055_opmode_t mode, neorv32_bno055_unit_sel
 void Neorv32_BNO055::setMode(neorv32_bno055_opmode_t mode) {
     _mode = mode;  // Set the mode
     transmit(BNO055_OPR_MODE_ADDR, _mode);  // Set the sensor to the selected mode
-    neorv32_delay_ms(30);  // Wait for 30 ms
+    neorv32_cpu_delay_ms(30);  // Wait for 30 ms
 }
 
 /**
@@ -161,13 +161,13 @@ neorv32_bno055_opmode_t Neorv32_BNO055::getMode() {
 void Neorv32_BNO055::setAxisRemap(Neorv32_BNO055::neorv32_bno055_axis_remap_config_t remapCode) {
     neorv32_bno055_opmode_t modeBack = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     transmit(BNO055_AXIS_MAP_CONFIG_ADDR, remapCode);  // Set the axis remap configuration
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
 
     setMode(modeBack);  // Set the sensor to the previous mode
-    neorv32_delay_ms(20);  // Wait for 20 ms
+    neorv32_cpu_delay_ms(20);  // Wait for 20 ms
 }
 
 
@@ -189,13 +189,13 @@ void Neorv32_BNO055::setAxisRemap(Neorv32_BNO055::neorv32_bno055_axis_remap_conf
 void Neorv32_BNO055::setAxisSign(Neorv32_BNO055::neorv32_bno055_axis_remap_sign_t remapSign) {
     neorv32_bno055_opmode_t modeBack = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     transmit(BNO055_AXIS_MAP_SIGN_ADDR, remapSign);  // Set the axis remap sign
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
 
     setMode(modeBack);  // Set the sensor to the previous mode
-    neorv32_delay_ms(20);  // Wait for 20 ms
+    neorv32_cpu_delay_ms(20);  // Wait for 20 ms
 }
 
 /**
@@ -208,7 +208,7 @@ void Neorv32_BNO055::setAxisSign(Neorv32_BNO055::neorv32_bno055_axis_remap_sign_
 void Neorv32_BNO055::setExtCrystalUse(bool usextal) {
     neorv32_bno055_opmode_t modeBack = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     uint8_t config = receive(BNO055_SYS_TRIGGER_ADDR);  // Read the SYS_TRIGGER register
     if(usextal) {
@@ -217,10 +217,10 @@ void Neorv32_BNO055::setExtCrystalUse(bool usextal) {
         config &= 0x7F;  // Clear the EXT Crystal Use bit
     }
     transmit(BNO055_SYS_TRIGGER_ADDR, config);  // Set the SYS_TRIGGER register
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
 
     setMode(modeBack);  // Set the sensor to the previous mode
-    neorv32_delay_ms(20);  // Wait for 20 ms
+    neorv32_cpu_delay_ms(20);  // Wait for 20 ms
 }
 
 /**
@@ -272,7 +272,7 @@ void Neorv32_BNO055::getSystemStatus(uint8_t *system_status, uint8_t *self_test_
         *system_error = receive(BNO055_SYS_ERR_ADDR);  // Read the SYS_ERR register
     }
 
-    neorv32_delay_ms(200);  // Wait for 200 ms
+    neorv32_cpu_delay_ms(200);  // Wait for 200 ms
 }
 
 /**
@@ -535,7 +535,7 @@ bool Neorv32_BNO055::getSensorOffsets(neorv32_bno055_offsets_t &offsets_type) {
     if(isFullyCalibrated()) {
         neorv32_bno055_opmode_t lastMode = _mode;  // Get the current mode
         setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-        neorv32_delay_ms(25);  // Wait for 25 ms
+        neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
         offsets_type.accel_offset_x = (receive(ACCEL_OFFSET_X_MSB_ADDR) << 8) | (receive(ACCEL_OFFSET_X_LSB_ADDR));  // Read the ACCEL_OFFSET_X_MSB and ACCEL_OFFSET_X_LSB registers
         offsets_type.accel_offset_y = (receive(ACCEL_OFFSET_Y_MSB_ADDR) << 8) | (receive(ACCEL_OFFSET_Y_LSB_ADDR));  // Read the ACCEL_OFFSET_Y_MSB and ACCEL_OFFSET_Y_LSB registers
@@ -568,7 +568,7 @@ bool Neorv32_BNO055::getSensorOffsets(neorv32_bno055_offsets_t &offsets_type) {
 void Neorv32_BNO055::setSensorOffsets(const uint8_t *calibData) {
     neorv32_bno055_opmode_t lastMode = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     transmit(ACCEL_OFFSET_X_LSB_ADDR, calibData[0]);  // Set the x-axis accelerometer offset
     transmit(ACCEL_OFFSET_X_MSB_ADDR, calibData[1]);  // Set the x-axis accelerometer offset
@@ -620,7 +620,7 @@ void Neorv32_BNO055::setSensorOffsets(const uint8_t *calibData) {
 void Neorv32_BNO055::setSensorOffsets(const neorv32_bno055_offsets_t &offsets_type) {
     neorv32_bno055_opmode_t lastMode = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     transmit(ACCEL_OFFSET_X_LSB_ADDR, (offsets_type.accel_offset_x) & 0x00FF);  // Set the x-axis accelerometer offset
     transmit(ACCEL_OFFSET_X_MSB_ADDR, (offsets_type.accel_offset_x >> 8) & 0x00FF);  // Set the x-axis accelerometer offset
@@ -690,10 +690,10 @@ bool Neorv32_BNO055::isFullyCalibrated() {
 void Neorv32_BNO055::enterSuspendMode() {
     neorv32_bno055_opmode_t modeBack = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
     transmit(BNO055_PWR_MODE_ADDR, 0x02);  // Set the power mode to suspend
     setMode(modeBack);  // Set the sensor to the previous mode
-    neorv32_delay_ms(20);  // Wait for 20 ms
+    neorv32_cpu_delay_ms(20);  // Wait for 20 ms
 }
 
 /**
@@ -703,11 +703,11 @@ void Neorv32_BNO055::enterSuspendMode() {
 void Neorv32_BNO055::enterNormalMode() {
     neorv32_bno055_opmode_t modeBack = _mode;  // Get the current mode
     setMode(OPERATION_MODE_CONFIG);  // Set the sensor to CONFIG mode
-    neorv32_delay_ms(25);  // Wait for 25 ms
+    neorv32_cpu_delay_ms(25);  // Wait for 25 ms
 
     transmit(BNO055_PWR_MODE_ADDR, 0x00);  // Set the power mode to normal
     setMode(modeBack);  // Set the sensor to the previous mode
-    neorv32_delay_ms(20);  // Wait for 20 ms
+    neorv32_cpu_delay_ms(20);  // Wait for 20 ms
 }
 
 /**
@@ -736,7 +736,7 @@ uint8_t Neorv32_BNO055::receive(neorv32_bno055_reg_t reg) {
 
     uint8_t value;
     neorv32_uart0_putc( reg);  // Send the register address
-    neorv32_delay_ms(10);  // Wait for 10 ms
+    neorv32_cpu_delay_ms(10);  // Wait for 10 ms
     value = (uint8_t)neorv32_uart0_getc();  // Get the value
 
     return value;  // Return the value
@@ -754,7 +754,7 @@ uint8_t Neorv32_BNO055::receive(neorv32_bno055_reg_t reg) {
 bool Neorv32_BNO055::receiveLen(neorv32_bno055_reg_t reg, uint8_t *buffer, uint8_t len) {
     if(neorv32_uart0_available()) {
         neorv32_uart0_putc( reg);  // Send the register address
-        neorv32_delay_ms(10);  // Wait for 10 ms
+        neorv32_cpu_delay_ms(10);  // Wait for 10 ms
         for(uint8_t i = 0; i < len; i++) {
 
             buffer[i] = (uint8_t)neorv32_uart0_getc();  // Get the value
