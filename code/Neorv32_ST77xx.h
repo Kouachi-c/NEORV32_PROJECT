@@ -62,26 +62,31 @@
 #define ST77XX_YELLOW 0xFFE0
 #define ST77XX_ORANGE 0xFC00
 
+#ifndef pgm_read_byte
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
+#endif
+#define boolean bool
+
 
 class Neorv32_ST77xx {
 protected:
-    uint8_t _colstart = 0,   ///< Some displays need this changed to offset
-    _rowstart = 0,       ///< Some displays need this changed to offset
+    uint8_t _colstart = 0;   ///< Some displays need this changed to offset
+    uint8_t _rowstart = 0;       ///< Some displays need this changed to offset
     //spiMode = SPI_MODE0; ///< Certain display needs MODE3 instead
-    uint16_t _width, _height;
+    uint16_t _width;
+    uint16_t _height;
     int8_t _cs, _dc, _rst, _mosi, _sclk, _miso;
 
-    void begin(uint32_t freq = 0);
+    void begin(void);
     void commonInit(const uint8_t *cmdList);
     void displayInit(const uint8_t *addr);
     void setColRowStart(int8_t col, int8_t row);
 
 public:
     Neorv32_ST77xx(uint16_t w, uint16_t h, int8_t _CS, int8_t _DC, int8_t _MOSI,
-            int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
+            int8_t _SCLK, int8_t _RST , int8_t _MISO);
+    Neorv32_ST77xx(uint16_t w, uint16_t h, int8_t _CS, int8_t _DC, int8_t _RST);
 
-    Neorv32_ST77xx(uint16_t w, uint16_t h, int8_t CS, int8_t DC,
-            int8_t RST = -1);
 
 
     void setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
@@ -89,6 +94,7 @@ public:
     void enableDisplay(boolean enable);
     void enableTearing(boolean enable);
     void enableSleep(boolean enable);
+    void sendCommand(uint8_t cmd, uint8_t *data, uint8_t numDataBytes);
     void sendCommand(uint8_t cmd, const uint8_t *data, uint8_t numDataBytes);
 
 };

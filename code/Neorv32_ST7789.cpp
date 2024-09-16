@@ -15,8 +15,7 @@ Neorv32_ST7789::Neorv32_ST7789(int8_t cs, int8_t dc, int8_t rst)
 }
 
 
-static const uint8_t PROGMEM
-generic_st7789[] =  {                // Init commands for 7789 screens
+static const uint8_t generic_st7789[] =  {                // Init commands for 7789 screens
 9,                              //  9 commands in list:
 ST77XX_SWRESET,   ST_CMD_DELAY, //  1: Software reset, no args, w/delay
 150,                          //     ~150 ms delay
@@ -56,7 +55,7 @@ void Neorv32_ST7789::init(uint16_t width, uint16_t height) {
 
 void Neorv32_ST7789::setRotation(uint8_t m) {
     uint8_t madctl = 0;
-    rotation = m & 3; // can't be higher than 3
+    uint8_t rotation = m & 3; // can't be higher than 3
     switch (rotation) {
         case 0:
             madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MY | ST77XX_MADCTL_RGB;
