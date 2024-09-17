@@ -16,6 +16,7 @@ int main() {
     Neorv32_BNO055 bno2(BNO055_ID);
     bno2.begin(OPERATION_MODE_AMG, UNIT_SEL_AND_CEl_DPS_DEG_MS2);
     screen.init(240, 240);
+    screen.begin();
     uint16_t x = 5;
     neorv32_uart0_printf("Hello World! %d\n", x);
     return 0;

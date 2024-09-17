@@ -77,7 +77,7 @@ protected:
     uint16_t _height;
     int8_t _cs, _dc, _rst, _mosi, _sclk, _miso;
 
-    void begin(void);
+
     void commonInit(const uint8_t *cmdList);
     void displayInit(const uint8_t *addr);
     void setColRowStart(int8_t col, int8_t row);
@@ -88,7 +88,7 @@ public:
     Neorv32_ST77xx(uint16_t w, uint16_t h, int8_t _CS, int8_t _DC, int8_t _RST);
 
 
-
+    void begin(void);
     void setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     void setRotation(uint8_t r);
     void enableDisplay(boolean enable);
