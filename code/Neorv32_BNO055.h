@@ -217,6 +217,29 @@ typedef enum {
     MAG_RADIUS_MSB_ADDR = 0X6A
 } neorv32_bno055_reg_t;
 
+/** BNO055 unit selection */
+typedef enum {
+    UNIT_SEL_AND_CEl_DPS_RAD_MS2 = 0b10000100,   // Andriod / Celsius / Dps / Rads / m/s^2
+    UNIT_SEL_AND_CEl_RPS_RAD_MS2 = 0b10000110,   // Andriod / Celsius / Rps / Rads / m/s^2
+    UNIT_SEL_AND_CEl_DPS_DEG_MS2 = 0b10000000,   // Andriod / Celsius / Dps / Deg / m/s^2
+    UNIT_SEL_AND_CEl_RPS_DEG_MS2 = 0b10000010,   // Andriod / Celsius / Rps / Deg / m/s^2
+    UNIT_SEL_AND_F_DPS_RAD_MS2 = 0b10010100,     // Andriod / Fahrenheit / Dps / Rads / m/s^2
+    UNIT_SEL_AND_F_RPS_RAD_MS2 = 0b10010110,     // Andriod / Fahrenheit / Rps / Rads / m/s^2
+    UNIT_SEL_AND_F_DPS_DEG_MS2 = 0b10010000,     // Andriod / Fahrenheit / Dps / Deg / m/s^2
+    UNIT_SEL_AND_F_RPS_DEG_MS2 = 0b10010010,     // Andriod / Fahrenheit / Rps / Deg / m/s^2
+
+    UNIT_SEL_WIN_CEl_DPS_RAD_MS2 = 0b00000100,   // Windows / Celsius / Dps / Rads / m/s^2
+    UNIT_SEL_WIN_CEl_RPS_RAD_MS2 = 0b00000110,   // Windows / Celsius / Rps / Rads / m/s^2
+    UNIT_SEL_WIN_CEl_DPS_DEG_MS2 = 0b00000000,   // Windows / Celsius / Dps / Deg / m/s^2
+    UNIT_SEL_WIN_CEl_RPS_DEG_MS2 = 0b00000010,   // Windows / Celsius / Rps / Deg / m/s^2
+    UNIT_SEL_WIN_F_DPS_RAD_MS2 = 0b00010100,     // Windows / Fahrenheit / Dps / Rads / m/s^2
+    UNIT_SEL_WIN_F_RPS_RAD_MS2 = 0b00010110,     // Windows / Fahrenheit / Rps / Rads / m/s^2
+    UNIT_SEL_WIN_F_DPS_DEG_MS2 = 0b00010000,     // Windows / Fahrenheit / Dps / Deg / m/s^2
+    UNIT_SEL_WIN_F_RPS_DEG_MS2 = 0b00010010,     // Windows / Fahrenheit / Rps / Deg / m/s^2
+
+} neorv32_bno055_unit_sel_t;
+
+
 class Neorv32_BNO055 {
 
 private:
@@ -319,26 +342,6 @@ public:
     } neorv32_bno055_temp_source_t;
 
     /** BNO055 unit selection */
-    typedef enum {
-        UNIT_SEL_AND_CEl_DPS_RAD_MS2 = 0b10000100,   // Andriod / Celsius / Dps / Rads / m/s^2
-        UNIT_SEL_AND_CEl_RPS_RAD_MS2 = 0b10000110,   // Andriod / Celsius / Rps / Rads / m/s^2
-        UNIT_SEL_AND_CEl_DPS_DEG_MS2 = 0b10000000,   // Andriod / Celsius / Dps / Deg / m/s^2
-        UNIT_SEL_AND_CEl_RPS_DEG_MS2 = 0b10000010,   // Andriod / Celsius / Rps / Deg / m/s^2
-        UNIT_SEL_AND_F_DPS_RAD_MS2 = 0b10010100,     // Andriod / Fahrenheit / Dps / Rads / m/s^2
-        UNIT_SEL_AND_F_RPS_RAD_MS2 = 0b10010110,     // Andriod / Fahrenheit / Rps / Rads / m/s^2
-        UNIT_SEL_AND_F_DPS_DEG_MS2 = 0b10010000,     // Andriod / Fahrenheit / Dps / Deg / m/s^2
-        UNIT_SEL_AND_F_RPS_DEG_MS2 = 0b10010010,     // Andriod / Fahrenheit / Rps / Deg / m/s^2
-
-        UNIT_SEL_WIN_CEl_DPS_RAD_MS2 = 0b00000100,   // Windows / Celsius / Dps / Rads / m/s^2
-        UNIT_SEL_WIN_CEl_RPS_RAD_MS2 = 0b00000110,   // Windows / Celsius / Rps / Rads / m/s^2
-        UNIT_SEL_WIN_CEl_DPS_DEG_MS2 = 0b00000000,   // Windows / Celsius / Dps / Deg / m/s^2
-        UNIT_SEL_WIN_CEl_RPS_DEG_MS2 = 0b00000010,   // Windows / Celsius / Rps / Deg / m/s^2
-        UNIT_SEL_WIN_F_DPS_RAD_MS2 = 0b00010100,     // Windows / Fahrenheit / Dps / Rads / m/s^2
-        UNIT_SEL_WIN_F_RPS_RAD_MS2 = 0b00010110,     // Windows / Fahrenheit / Rps / Rads / m/s^2
-        UNIT_SEL_WIN_F_DPS_DEG_MS2 = 0b00010000,     // Windows / Fahrenheit / Dps / Deg / m/s^2
-        UNIT_SEL_WIN_F_RPS_DEG_MS2 = 0b00010010,     // Windows / Fahrenheit / Rps / Deg / m/s^2
-
-    } neorv32_bno055_unit_sel_t;
 
     /** structure to represent revisions **/
     typedef struct {

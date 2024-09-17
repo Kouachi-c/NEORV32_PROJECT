@@ -4,10 +4,6 @@
 
 #include "Neorv32_ST7789.h"
 
-Neorv32_ST7789::Neorv32_ST7789(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk, int8_t rst)
-    : Neorv32_ST77xx(240, 240, cs, dc, mosi, sclk, rst) {
-    // Constructor
-}
 
 Neorv32_ST7789::Neorv32_ST7789(int8_t cs, int8_t dc, int8_t rst)
     : Neorv32_ST77xx(240, 240, cs, dc, rst) {

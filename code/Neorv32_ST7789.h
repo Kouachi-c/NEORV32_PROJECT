@@ -18,8 +18,7 @@ class Neorv32_ST7789 : public Neorv32_ST77xx {
         uint8_t _colstart2 = 0, _rowstart2 = 0;
 
     public:
-        Neorv32_ST7789(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk, int8_t rst);
-        Neorv32_ST7789(int8_t cs, int8_t dc, int8_t rst);
+       Neorv32_ST7789(int8_t cs, int8_t dc, int8_t rst);
         void setRotation(uint8_t m);
         void init(uint16_t width, uint16_t height);
 
