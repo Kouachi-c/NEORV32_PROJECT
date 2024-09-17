@@ -239,6 +239,17 @@ typedef enum {
 
 } neorv32_bno055_unit_sel_t;
 
+/** Vector Mappings **/
+typedef enum {
+    VECTOR_ACCELEROMETER = BNO055_ACCEL_DATA_X_LSB_ADDR,
+    VECTOR_MAGNETOMETER = BNO055_MAG_DATA_X_LSB_ADDR,
+    VECTOR_GYROSCOPE = BNO055_GYRO_DATA_X_LSB_ADDR,
+    VECTOR_EULER = BNO055_EULER_H_LSB_ADDR,
+    VECTOR_LINEARACCEL = BNO055_LINEAR_ACCEL_DATA_X_LSB_ADDR,
+    VECTOR_GRAVITY = BNO055_GRAVITY_DATA_X_LSB_ADDR
+} neorv32_vector_type_t;
+
+
 
 class Neorv32_BNO055 {
 
@@ -341,8 +352,6 @@ public:
         TEMP_SOURCE_GYR = 0x01
     } neorv32_bno055_temp_source_t;
 
-    /** BNO055 unit selection */
-
     /** structure to represent revisions **/
     typedef struct {
         uint8_t accel_rev; /**< acceleration rev */
@@ -352,15 +361,6 @@ public:
         uint8_t bl_rev;    /**< bootloader rev */
     } neorv32_bno055_rev_info_t;
 
-    /** Vector Mappings **/
-    typedef enum {
-        VECTOR_ACCELEROMETER = BNO055_ACCEL_DATA_X_LSB_ADDR,
-        VECTOR_MAGNETOMETER = BNO055_MAG_DATA_X_LSB_ADDR,
-        VECTOR_GYROSCOPE = BNO055_GYRO_DATA_X_LSB_ADDR,
-        VECTOR_EULER = BNO055_EULER_H_LSB_ADDR,
-        VECTOR_LINEARACCEL = BNO055_LINEAR_ACCEL_DATA_X_LSB_ADDR,
-        VECTOR_GRAVITY = BNO055_GRAVITY_DATA_X_LSB_ADDR
-    } neorv32_vector_type_t;
 
     /** BNO055 constructor */
     Neorv32_BNO055(int32_t sensorID = -1); // Constructor

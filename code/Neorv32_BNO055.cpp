@@ -366,7 +366,7 @@ int8_t Neorv32_BNO055::getTemp() {
  * @return
  *        vector
  */
- void Neorv32_BNO055::getVector(Neorv32_BNO055::neorv32_vector_type_t vector, int16_t *data = nullptr) {
+ void Neorv32_BNO055::getVector(neorv32_vector_type_t vector, int16_t *data) {
     memset(data, 0, sizeof(int16_t) * 3);  // Set the data to 0
 
     uint8_t lsb, msb;

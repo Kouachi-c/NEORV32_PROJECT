@@ -96,6 +96,7 @@ public:
     void enableSleep(boolean enable);
     void sendCommand(uint8_t cmd, uint8_t *data, uint8_t numDataBytes);
     void sendCommand(uint8_t cmd, const uint8_t *data, uint8_t numDataBytes);
+    void sendCommand(uint8_t cmd, int16_t *data, uint8_t numDataBytes);
 
 };
 

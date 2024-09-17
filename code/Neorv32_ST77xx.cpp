@@ -168,3 +168,20 @@ void Neorv32_ST77xx::sendCommand(uint8_t cmd, const uint8_t *data, uint8_t numDa
         neorv32_spi_trans(numDataBytes);
     }
 }
+
+void Neorv32_ST77xx::sendCommand(uint8_t cmd, int16_t *data, uint8_t numDataBytes) {
+    neorv32_gpio_pin_set(_dc, 0);
+    neorv32_spi_trans(cmd);
+    uint8_t length = sizeof(data);
+    int16_t tx_data[length];
+    for (uint8_t i = 0; i < length; i++) {
+        tx_data[i] = data[i];
+    }
+    if (data && numDataBytes) {
+        neorv32_gpio_pin_set(_dc, 1);
+        for (uint8_t i = 0; i < length; i++) {
+            neorv32_spi_trans(tx_data[i]);
+        }
+        neorv32_spi_trans(numDataBytes);
+    }
+}
